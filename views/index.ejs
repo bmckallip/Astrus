@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <!-- Primary Meta Tags -->
+        <title>Astrus - Chat Room</title>
+        <meta name="title" content="Astrus - Chat Room">
+        <meta name="description" content="Astrus is a messaging service designed to be simple and easy to use, while providing multi-platform support, games, and even more great features.">
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://astrus.tk/">
+        <meta property="og:title" content="Astrus - Chat Room">
+        <meta property="og:description" content="Astrus is a messaging service designed to be simple and easy to use, while providing multi-platform support, games, and even more great features.">
+        <meta property="og:image" content="/favicon.svg">
+
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary_large_image">
+        <meta property="twitter:url" content="https://astrus.tk/">
+        <meta property="twitter:title" content="Astrus - Chat Room">
+        <meta property="twitter:description" content="Astrus is a messaging service designed to be simple and easy to use, while providing multi-platform support, games, and even more great features.">
+        <meta property="twitter:image" content="/favicon.svg">
+        <link rel="shortcut icon" type="image/svg" href="/favicon.svg">
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <%- include('parts/styles') %>
+        <link rel="stylesheet" href="/styles/chat-styling.css">
+        <script src="//cdn.jsdelivr.net/npm/eruda"></script>
+        <script>
+            if (window.location.search === "?dev") eruda.init();
+        </script>
+    </head>
+
+    <body>
+        <div id="connectionStatus"></div>
+        <div id="mobileMenuContainer">
+            <div id="mobileMenu"></div>
+            <div class="brs">
+            </div>
+        </div>
+        <div id="loginContainer">
+            <div id='loginBackground'></div>
+            <div id='loginMenu'>
+                <div id='loginContents'>
+                    <div id='loginTitle'>Welcome to Astrus</div>
+                </div>
+                <div id='loginInputsContainer'>
+                    <div id='invalidAccount' style="display: none;">The email or password you provided is invalid</div>
+                    <div id='allValsReq' style="display: none;">All values are required</div>
+                    <div id='loginBox'>
+                        Log in
+                        <div id='username'>
+                            <input id='UNBox' placeholder="email" />
+                        </div>
+                        <div id='password'>
+                            <input id='PWBox' placeholder="password" type="password" />
+                        </div>
+                        <label class="container">Remember Me
+                            <input type="checkbox" id="rememberMe" tabindex="0">
+                            <span class="checkmark"></span>
+                          </label>
+                    </div>
+                    <div id='buttons'>
+                        <div id='login' tabindex="0">
+                            Log In
+                        </div><div id='create' tabindex="0">
+                            Create Account
+                        </div>
+                    </div>
+                </div>
+                <div id='createElementsContainer' style='display:none'>
+                    <div id='invalidEmail' style="display: none;">The email you provided is not valid</div>
+                    <div id='PasswordNotMatched' style="display: none;">Passwords must match</div>
+                    <div id='allValuesReq' style="display: none;">All values are required</div>
+                    <div id='accountExists' style="display: none;">The account provided is invalid. Check all values entered and try again</div>
+                    <div id='emailPrompt' class='createinput'>
+                        <input placeholder="Email" id="emailPromptInput" class='newAccountInput' />
+                    </div>
+                    <div id='namePrompt' class='createinput'>
+                        <input placeholder="Username" id="namePromptInput" class='newAccountInput' />
+                    </div>
+                    <div id='passwordPrompt' class='createinput'>
+                        <input placeholder="Password" id="passwordPromptInput" class='newAccountInput' type='password' />
+                    </div>
+                    <div id='passwordConfPrompt' class='createinput'>
+                        <input placeholder="Confirm Password" id="passwordConfPromptInput" class='newAccountInput' type='password' />
+                    </div>
+                    <div id='createSubmit' tabindex="0">Submit</div>
+                </div>
+            </div>
+        </div>
+        <img src="/account.svg" class="icon" id="profile"/>
+        <div id="rooms">
+            <span title="New Message" id="addFriend">
+                <img src="/attach.svg" id="addFriendIcon">
+            </span>
+            <div id="Room_Title">Rooms</div>
+            <div id="Room_Container"></div>
+            <div id="friendsSearch">
+                <div id="friendsTitle">
+                    <img src="/search.svg" class="icon" id="roomSearchIcon">
+                </div>
+                <div id="searchContainer">
+                    <div contenteditable="false" id="roominput">
+                        <div id="friendInputContainer">
+                            <div id="friendShape"></div>
+                            <div contenteditable="true" id="friendInput" class="empty">&nbsp</div>
+                        </div>
+                        <span id="mirror"></span>
+                    </div>
+                </div>
+                <div id="friendsSubmit" class="disabled">
+                    <div id="createContainer">
+                        <img src="/attach.svg" id="createRoomIcon">
+                    </div>
+                    Create</div>
+            </div>
+            <div id="friendMenuContainer" style="display: none;">
+                <div id='addFriendButton'>Add Friend</div>
+                <div id="friendRequestsTitle" class="friendsTitle">Requests</div>
+                <div id="friendRequestsContainer"></div>
+                <div id="friendsListTitle" class="friendsTitle">Friends</div>
+                <div id="Friends_Container"></div>
+                <div id="pendingFriendsTitle" class="friendsTitle">Waiting</div>
+                <div id="pendingFriendsContainer"></div>
+            </div>
+            <div id="buttonContainer">
+                <div id="roomsTab" class="button active">Rooms</div><div id="friendsTab" class="button">Friends</div>
+            </div>
+        </div>
+
+        <div id='addFriendGraphic'>
+            <div id="friendBackground"></div>
+            <div id="addFriendMenu">
+                Add a Friend:
+                <div id="addFriendInput" contenteditable="true"></div>
+            </div>
+        </div>
+
+        <div id="addImage">
+            <img src="/attach.svg" id="addImageIcon">
+            <input type="file" id="fileInput" multiple/>
+        </div>
+        <div id="sendContainer">
+            <img src="/send.svg" id="sendIcon">
+        </div>
+
+        <div id="container">
+            <div id="current"></div>
+            <div id="content">
+            </div>
+            <div id="date0"></div>
+            <div id="attachmentPreviewContainer"></div>
+            <div contenteditable="true" id="input"></div>
+        </div>
+        <div id="accountContainer" style="display: none;">
+            <div id="accountMenu">
+                <div id='status'>Connecting</div>
+                <div id="accountSettings">
+                    <div id="settingsBlock">
+                        <img src="/settings.svg" id="settings"/> <div id="settingsText">Settings</div>
+                    </div>
+                    <div id="logOut">
+                        <img src="/logOut.svg" id='logoutIcon'> <div id="logoutText">Log Out</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="settingsContainer">
+            <div id="settingsMenu">
+                <h1>Settings</h1>
+                <div class="setting">Dark Mode
+                    <div class="switch" id="darkMode">
+                        <div class="slider"></div>
+                    </div>
+                </div>
+                <div class="setting">Message Color
+                    <div class="selector" id="messageColor">
+                        <div id="colorsBox"> 
+                            <div id="blue" class="colors blue"></div>
+                            <div id="pink" class="colors pink"></div>
+                            <div id="purple" class="colors purple"></div>
+                            <div id="orange" class="colors orange"></div>
+                            <div id="grey" class="colors grey"></div>
+                            <div id="green" class="colors green"></div>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+            <div id="settingsCloseButton">+</div>
+        </div>
+        <div id="settingsBackground"></div>
+        <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
+        <script src="/js/variableDefinitions.js"></script>
+        <script src='/js/compressorjs.js'></script>
+        <script src="/js/addFriend.js"></script>
+        <script src="/js/chat-frontend.js"></script>
+        <script>
+
+            window.addEventListener("resize", updateFriend);
+
+            addFriendInput.onkeydown = (e) => {
+                if(e.key === "Enter") {
+                    e.preventDefault();
+                    if(isValidEmail(addFriendInput.innerText)) {
+                        connection.send(JSON.stringify({
+                            type: "friendRequest",
+                            data: addFriendInput.innerText
+                        }));
+                        addFriendInput.innerText = "";
+                    }
+                }
+            };
+
+            const toggleDisplay = (element) => {
+                if(element.style.display === "none") {
+                    element.style.display = "block";
+                } else {
+                    element.style.display = "none";
+                }
+            }
+
+            sendContainer.onclick = () => {
+                if(attachments.length <= 0) {
+                    let msg = input.innerText;
+                    if (!msg) {
+                        return;
+                    }
+                    msg = emojify(input);
+                    // send the message as an ordinary text
+                    if(/\S/.test(msg)) {
+                        console.log(msg);
+                        connection.send(JSON.stringify({ type: "message", data: msg, room: userRoom}));
+                        input.innerHTML = '';
+                    } else {
+                        input.innerHTML = '';
+                    }
+                    if (myName === false) {
+                        myName = msg;
+                    }
+                } else {
+                    connection.send(JSON.stringify({
+                        type: 'attachmentLength',
+                        data: attachments.length,
+                        types: types
+                    }));
+                    for(let i = 0; i < attachments.length; i++) {
+                        connection.send(attachments[i]);
+                    }
+                    attachments = [];
+                    types = [];
+                    Index = 0;
+                    fileInput.value = '';
+                    input.contentEditable = 'false';
+                }
+            }
+
+            roomSubmit.onclick = () => {
+                if(newRoomList != [] && !roomSubmit.classList.contains('disabled')) {
+                    connection.send(JSON.stringify( {type: "room", data: newRoomList}));
+                    resetFriends();
+                    addFriendIcon.click();
+                }
+            }
+
+            roomSearchIcon.onclick = (e) => {
+                e.preventDefault();
+                friendInput.click();
+            }
+
+            const isNonCompressableFile = async (file) => {
+                if(file.name.match(/\.gif$/i)) return true;
+                return new Promise(resolve => {
+                    let image = new Image();
+                    image.onload = () => {
+                        resolve(false);
+                    }
+
+                    image.onerror = () => {
+                        resolve(true);
+                    }
+
+                    image.src = URL.createObjectURL(file);
+                });
+            }
+
+            friendInput.addEventListener("focus", function(e) {
+                searchContainer.classList.add("active");
+            });
+
+            friendInput.addEventListener("blur", function(e) {
+                searchContainer.classList.remove("active");
+                removeActive(friendsContainer);
+            });
+
+            input.addEventListener("focus", function(e) {
+                attachmentPreview.classList.add("active");
+            });
+
+            input.addEventListener("blur", function(e) {
+                attachmentPreview.classList.remove("active");
+            });
+
+            friendInput.addEventListener("input", function(e) {
+
+                mirror.innerHTML = friendInput.innerHTML;
+                friendInputContainer.style.height = 0;
+                roominput.style.height = "";
+
+                let containerHeight = roominput.scrollHeight;
+                friendInputContainer.style.height = containerHeight + "px";
+                roominput.style.height = containerHeight + "px";
+
+                if(/^\u00a0?\n?$/.test(friendInput.innerText)) {
+                    friendInput.innerHTML = "&nbsp;";
+                    friendInput.classList.add('empty');
+                    let startNode = friendInput.childNodes[0];
+                    let range = document.createRange();
+                    range.setStart(startNode, 1);
+                    range.setEnd(startNode, 1);
+                    let selection = document.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+
+                let val = this.innerText;
+                let elements = document.getElementsByClassName('friend');
+                let currentVisible = elements.length;
+                for(let i = 0; i < elements.length; i++) {
+                    elements[i].classList.remove('hidden');
+
+                    //ignore the first character since it's always a nbsp
+                    if(elements[i].innerText.substr(0, val.length - 1).toLowerCase() != val.substring(1, val.length).toLowerCase()) {
+                        elements[i].classList.add('hidden');
+                        currentVisible--;
+                    }
+                }
+
+                if(friendInput.innerHTML != "&nbsp;") {
+                    if(currentVisible != 0) {
+                        currentActiveVertical = 0;
+                        addActiveFriend(friendsContainer);
+                    } else {
+                        currentActiveVertical = -1;
+                        addActiveFriend(friendsContainer);
+                    }
+                }
+                if(friendInput.innerHTML === "&nbsp;" && newRoomList.length === 0) {
+                    friendInput.classList.add('empty');
+                } else {
+                    friendInput.classList.remove('empty');
+                }
+                updateFriend();
+            });
+
+            let lastTitle;
+            let lastFriendContainerDisplay;
+            addFriendIcon.onclick = () => {
+                if(roomTitle.innerText === "New Room") {
+                    roomTitle.innerText = lastTitle;
+                } else {
+                    lastTitle = roomTitle.innerText;
+                    roomTitle.innerText = "New Room";
+                }
+                friendsSearch.classList.toggle('visible');
+                friendsContainer.classList.toggle('small');
+                if(!addFriendImage.classList.contains('active')) {
+                    lastFriendContainerDisplay = friendMenuContainer.style.display;
+                    friendMenuContainer.style.display = "block";
+                    roomContainer.style.display = "none";
+                } else {
+                    friendMenuContainer.style.display = lastFriendContainerDisplay;
+                    if(friendMenuContainer.style.display === "none") {
+                        roomContainer.style.display = "block";
+                    } else {
+                        roomContainer.style.display = "none";
+                    }
+                }
+                addFriendImage.classList.toggle('active');
+            }
+
+            roomsTab.onclick = (e) => {
+                if(addFriendImage.classList.contains('active')) {
+                    e.preventDefault();
+                    addFriendIcon.click();
+                    roomsTab.click();
+                } else {
+                    friendsTab.classList.remove('active');
+                    roomsTab.classList.add('active');
+                    roomTitle.innerText = "Rooms";
+                    roomContainer.style.display = "block";
+                    friendMenuContainer.style.display = "none";
+                    // addFriendIcon.style.display = "none";
+                    friendsSearch.classList.remove("visible");
+                }
+            }
+
+            friendsTab.onclick = (e) => {
+                if(addFriendImage.classList.contains('active')) {
+                    e.preventDefault();
+                    addFriendIcon.click();
+                    friendsTab.click();
+                } else {
+                    roomsTab.classList.remove('active');
+                    friendsTab.classList.add('active');
+                    roomTitle.innerText = "Friends";
+                    friendMenuContainer.style.display = "block";
+                    roomContainer.style.display = "none";
+                    addFriendIcon.style.display = "block";
+                }
+            }
+
+            content.addEventListener('scroll', () => {
+                if(content.scrollTop <= 150 && !loading && canLoad) {
+                    loading = true;
+                    requestHistory();
+                }
+            });
+
+            attach.onclick = () => {
+                fileInput.click();
+            }
+
+            input.onpaste = async (e) => {
+                e.stopPropagation()
+                let clipData = e.clipboardData.files;
+                getFiles(Array.from(clipData));
+                if(clipData.length > 0) {
+                    e.preventDefault();
+                }
+            }
+
+            fileInput.onchange = async () => {
+                let files = fileInput.files;
+                getFiles(Array.from(files));
+                if(files.length > 0) {
+                    fileInput.value = "";
+                }
+            };
+
+            logOutBox.onclick = () => {
+                logOut();
+            };
+
+            account.onclick = () => {
+                accountContainer.style.display = 'block';
+            };
+
+            accountContainer.onclick = () => {
+                accountContainer.style.display = 'none';
+            };
+
+            accountSubmit.onclick = () => {
+                if (window.Notification && Notification.permission !== 'denied') {
+                    Notification.requestPermission();
+                }
+                let password = newPassword.value;
+                let passwordConf = newPasswordConf.value;
+                let username = newUsername.value;
+                let name = newScreenName.value;
+                invalidEmail.style.display = 'none';
+                passwordNotMatched.style.display = 'none';
+                allValuesReq.style.display = 'none';
+                if(name != '' && username != '' && password != '' && passwordConf != '') {
+                    if(password === passwordConf) {
+                        if(isValidEmail(username)) {
+                            connection.send(JSON.stringify({
+                                newUser: true,
+                                type: 'name',
+                                data: username,
+                                screenName: name,
+                                password: password
+                            }));
+                        } else {
+                            invalidEmail.style.display = 'block';
+                        }
+                    } else {
+                        passwordNotMatched.style.display = 'block';
+                    }
+                } else {
+                    allValuesReq.style.display = 'block';
+                }
+            };
+
+            createButton.onclick = () => {
+                inputContainer.style.display = "none";
+                create.style.display = "block";
+                newUsername.value = UNBox.value;
+                newPassword.value = PWBox.value;
+            }
+
+            loginButton.onclick = () => {
+                if (window.Notification && Notification.permission !== 'denied') {
+                    Notification.requestPermission();
+                }
+                let username = usernameInput.value;
+                let password = passwordInput.value;
+                allValsReq.style.display = 'none';
+                if(username != '' && password != '') {
+                    if (isValidEmail(username)) {
+                        let rememberMeValue = rememberMe.checked;
+                        connection.send(JSON.stringify({
+                            type: "name",
+                            data: username,
+                            password: password,
+                            loginID: rememberMeValue
+                        }));
+                        console.log("correct");
+                    } else {
+                        const invalidAccount = document.getElementById('invalidAccount');
+                        invalidAccount.style.display = 'block';
+                        console.log("email");
+                    }
+                } else {
+                    allValsReq.style.display = 'block';
+                    console.log("allvalues");
+                }
+            };
+
+            showLoaders = () => {
+                let loader = document.createElement("div");
+                loader.className = "loader";
+                if(darkModeBool) {
+                    loader.classList.add("dark");
+                }
+                content.appendChild(loader);
+
+                let roomLoader = document.createElement("div");
+                roomLoader.className = "roomLoader";
+                if(darkModeBool) {
+                    roomLoader.classList.add("dark");
+                }
+                roomContainer.appendChild(roomLoader);
+            }
+
+            toggle.onclick = () => roomBar.classList.toggle('showing');
+
+            settings.onclick = () => {
+                settingsMenu.classList.toggle('active');
+                settingsBackground.classList.toggle('active');
+            }
+
+            settingsBackground.onclick = () => {
+                settingsMenu.classList.toggle('active');
+                settingsBackground.classList.toggle('active');
+                document.getElementById("colorsBox").classList.remove("active");
+            }
+
+            settingsClose.onclick = () => {
+                settingsMenu.classList.toggle('active');
+                settingsBackground.classList.toggle('active');
+                document.getElementById("colorsBox").classList.remove("active");
+            }
+
+            for(let i = 0; i < settingArr.length; i++) {
+                settingArr[i].onclick = () => {
+                    settingArr[i].classList.toggle('active');
+                    sliders[i].classList.toggle('active');
+                }
+            }
+            darkMode.onclick = () => {
+                let elements = document.getElementsByTagName("*");
+                for(let i = 0; i < elements.length; i++) {
+                    elements[i].classList.toggle('dark');
+                }
+                darkModeBool = !darkModeBool;
+                localStorage.setItem('darkMode', darkModeBool);
+            }
+
+            if(localStorage.getItem('darkMode') === 'true' || window.matchMedia("(prefers-color-scheme: dark)").matches) {
+                darkMode.click();
+            }
+            if(localStorage.getItem('randomID')) {
+                loginContainer.style.display = "none";
+                showLoaders();
+            }
+
+            messageColor.onclick = () => {
+                document.getElementById("colorsBox").classList.toggle("active");
+            
+                for(let i = 0; i < colors.length; i++) {
+                    colors[i].onclick = () => {
+                        messageColor.classList.remove(myColor);
+                        status.classList.remove(myColor);
+                        myColor = colors[i].id;
+                        messageColor.classList.add(colors[i].id);
+                        status.classList.add(colors[i].id);
+                        connection.send(JSON.stringify( {type: "color change", data: colors[i].id}));
+                    }
+                }
+        }
+
+        </script>
+    </body>
+
+</html>
